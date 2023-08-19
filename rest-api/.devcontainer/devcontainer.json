@@ -1,0 +1,17 @@
+{
+    "name": "rest-api",
+    "dockerComposeFile": [
+        "../../docker-compose.yml"
+    ],
+    "service": "rest-api",
+    "shutdownAction": "none",
+    "workspaceFolder": "/workspace/rest-api",
+    "overrideCommand": true,
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "golang.go"
+            ]
+        }
+    }
+}

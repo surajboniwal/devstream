@@ -1,0 +1,3 @@
+internal/config/production.env
+main
+logs/

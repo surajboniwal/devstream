@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  rest-api:
+    build:
+      context: ./rest-api/.devcontainer
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/workspace:cached
+    command: /bin/sh -c "while sleep 1000; do :; done"
+    ports:
+      - 3000:3000
+    networks:
+      - default
+
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=surajboniwal
+      - POSTGRES_PASSWORD=devstream
+      - POSTGRES_DB=devstream
+    volumes:
+      - ./volumes/db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - default
+
+networks:
+  default:
+    driver: "bridge"
