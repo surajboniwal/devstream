@@ -30,10 +30,13 @@ func main() {
 	idGen := idgen.NewSnowflakeIdGen()
 
 	userRepo := repository.NewUserRepositoryPg(database.DB, idGen)
+	streamKeyRepo := repository.NewStreamKeyRepositoryPG(database.DB, idGen)
 
 	authHandler := handler.NewAuthHandler(&userRepo)
+	streamKeysHandler := handler.NewStreamKeyHandler(&streamKeyRepo)
 
 	router.AuthRoutes(r, &authHandler)
+	router.StreamKeyRoutes(r, &streamKeysHandler)
 
 	http.ListenAndServe(fmt.Sprintf(":%v", config.PORT), r)
 }

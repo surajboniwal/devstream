@@ -7,13 +7,14 @@ import (
 )
 
 type User struct {
-	Id         int64     `json:"id"`
-	Name       string    `json:"name"`
-	Email      string    `json:"email"`
-	Username   string    `json:"username"`
-	Password   string    `json:"-"`
-	Created_At time.Time `json:"created_at"`
-	Updated_At time.Time `json:"-"`
+	Id          int64      `json:"id"`
+	Name        string     `json:"name"`
+	Email       string     `json:"email"`
+	Username    string     `json:"username"`
+	Password    string     `json:"-"`
+	Verified_At *time.Time `json:"verified_at"`
+	Updated_At  *time.Time `json:"-"`
+	Created_At  time.Time  `json:"created_at"`
 }
 
 func (u *User) HashPassword() error {

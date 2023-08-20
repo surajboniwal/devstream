@@ -10,3 +10,8 @@ type UserRepository interface {
 	GetByEmail(string) (*model.User, *apperror.AppError)
 	GetByUsername(string) (*model.User, *apperror.AppError)
 }
+
+type StreamKeyRepository interface {
+	GetByUserId(int64) (*[]model.StreamKey, *apperror.AppError)
+	Create(int64, string) (*model.StreamKey, *apperror.AppError)
+}

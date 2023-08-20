@@ -7,7 +7,8 @@ DROP TRIGGER IF EXISTS trigger_update_timestamp ON "stream_keys";
 -- Drop indexes
 DROP INDEX IF EXISTS "email_unique";
 DROP INDEX IF EXISTS "username_unique";
-DROP INDEX IF EXISTS "user_key_unique";
+DROP INDEX IF EXISTS "user_streamkey_unique";
+DROP INDEX IF EXISTS "streamkey_name_unique";
 
 -- Drop tables
 DROP TABLE IF EXISTS "stream_keys";

@@ -18,7 +18,8 @@ CREATE TABLE "stream_keys" (
 
 CREATE UNIQUE INDEX "email_unique" ON "users" ("email");
 CREATE UNIQUE INDEX "username_unique" ON "users" ("username");
-CREATE UNIQUE INDEX "user_key_unique" ON "stream_keys" ("user_id", "key");
+CREATE UNIQUE INDEX "user_streamkey_unique" ON "stream_keys" ("user_id", "key");
+CREATE UNIQUE INDEX "streamkey_name_unique" ON "stream_keys" ("name");
 
 ALTER TABLE "stream_keys" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
