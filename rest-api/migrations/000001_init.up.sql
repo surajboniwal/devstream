@@ -4,9 +4,9 @@ CREATE TABLE "users" (
   "email" text NOT NULL,
   "username" text NOT NULL,
   "password" text NOT NULL,
-  "verified_at" timestamp DEFAULT(NULL),
-  "created_at" timestamp DEFAULT (now()),
-  "updated_at" timestamp DEFAULT (now()),
+  "verified_at" timestamp DEFAULT NULL,
+  "updated_at" timestamp DEFAULT NULL,
+  "created_at" timestamp NOT NULL DEFAULT (now()),
   PRIMARY KEY ("id")
 );
 
