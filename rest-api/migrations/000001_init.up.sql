@@ -1,17 +1,26 @@
 CREATE TABLE "users" (
-  "id" bigint,
+  "id" bigint NOT NULL,
   "name" text NOT NULL,
-  "email" text NOT NULL,
   "username" text NOT NULL,
+  "email" text NOT NULL,
   "password" text NOT NULL,
-  "verified_at" timestamp DEFAULT NULL,
-  "updated_at" timestamp DEFAULT NULL,
+  "verified_at" timestamp DEFAULT null,
+  "updated_at" timestamp DEFAULT null,
   "created_at" timestamp NOT NULL DEFAULT (now()),
   PRIMARY KEY ("id")
 );
 
+CREATE TABLE "stream_keys" (
+  "user_id" bigint NOT NULL,
+  "name" text NOT NULL,
+  "key" bigint NOT NULL
+);
+
 CREATE UNIQUE INDEX "email_unique" ON "users" ("email");
 CREATE UNIQUE INDEX "username_unique" ON "users" ("username");
+CREATE UNIQUE INDEX "user_key_unique" ON "stream_keys" ("user_id", "key");
+
+ALTER TABLE "stream_keys" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
 -- Trigger for updated_at field
 CREATE OR REPLACE FUNCTION updated_timestamp_func()
