@@ -12,5 +12,6 @@ func StreamKeyRoutes(r *chi.Mux, streamKeyHandler *handler.StreamKeyHandler) {
 		router.Use(appauth.AuthMiddleware)
 		router.Get("/", streamKeyHandler.GetStreamKeysForUser)
 		router.Post("/", streamKeyHandler.CreateStreamKey)
+		router.Patch("/{id}", streamKeyHandler.UpdateStreamKey)
 	})
 }

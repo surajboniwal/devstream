@@ -11,15 +11,20 @@ CREATE TABLE "users" (
 );
 
 CREATE TABLE "stream_keys" (
+  "id" bigint NOT NULL,
   "user_id" bigint NOT NULL,
   "name" text NOT NULL,
-  "key" bigint NOT NULL
+  "key" bigint NOT NULL,
+  "updated_at" timestamp DEFAULT null,
+  "created_at" timestamp NOT NULL DEFAULT (now()),
+  PRIMARY KEY ("id")
 );
 
 CREATE UNIQUE INDEX "email_unique" ON "users" ("email");
 CREATE UNIQUE INDEX "username_unique" ON "users" ("username");
-CREATE UNIQUE INDEX "user_streamkey_unique" ON "stream_keys" ("user_id", "key");
-CREATE UNIQUE INDEX "streamkey_name_unique" ON "stream_keys" ("name");
+CREATE INDEX "streamkey_id_user_id" ON "stream_keys" ("id", "user_id");
+CREATE UNIQUE INDEX "streamkey_key_unique" ON "stream_keys" ("user_id", "key");
+CREATE UNIQUE INDEX "streamkey_name_unique" ON "stream_keys" ("user_id", "name");
 
 ALTER TABLE "stream_keys" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 

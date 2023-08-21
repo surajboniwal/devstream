@@ -35,7 +35,19 @@ func (r StreamKeyRepositoryPG) GetByUserId(id int64) (*[]model.StreamKey, *apper
 func (r StreamKeyRepositoryPG) Create(userId int64, name string) (*model.StreamKey, *apperror.AppError) {
 	var streamKey model.StreamKey
 
-	err := r.db.Get(&streamKey, "INSERT INTO stream_keys (user_id, name, key) VALUES($1, $2, $3) RETURNING *;", userId, name, r.idgen.New())
+	err := r.db.Get(&streamKey, "INSERT INTO stream_keys (id, user_id, name, key) VALUES($1, $2, $3, $4) RETURNING *;", r.idgen.New(), userId, name, r.idgen.New())
+
+	if err != nil {
+		return nil, apperror.Parse(err)
+	}
+
+	return &streamKey, nil
+}
+
+func (r StreamKeyRepositoryPG) Update(id int64, userId int64, name string) (*model.StreamKey, *apperror.AppError) {
+	var streamKey model.StreamKey
+
+	err := r.db.Get(&streamKey, "UPDATE stream_keys SET name = $1 WHERE id = $2 AND user_id = $3 RETURNING *;", name, id, userId)
 
 	if err != nil {
 		return nil, apperror.Parse(err)
