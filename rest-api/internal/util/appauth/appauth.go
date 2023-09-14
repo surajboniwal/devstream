@@ -1,66 +1,72 @@
 package appauth
 
 import (
+	"context"
 	"devstream-rest-api/internal/util/apperror"
 	"devstream-rest-api/internal/util/apphttp"
-	"context"
-	"fmt"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
-	"github.com/o1egl/paseto"
+	"github.com/golang-jwt/jwt"
 )
 
-var secretKey string
+var secretKey []byte
 
 func Init(key string) {
-	secretKey = key
+	secretKey = []byte(key)
+}
+
+type JWTClaim struct {
+	UserId int64 `json:"userId"`
+	jwt.StandardClaims
 }
 
 func Generate(userid int64) (string, *apperror.AppError) {
-	now := time.Now()
-	exp := now.Add(time.Minute * 30)
-	nbt := now
-	t := paseto.NewV2()
+	expirationTime := time.Now().Add(1 * time.Hour)
 
-	jsonToken := paseto.JSONToken{
-		Issuer:     "devstream-rest-api",
-		IssuedAt:   now,
-		Subject:    fmt.Sprintf("%v", userid),
-		Expiration: exp,
-		NotBefore:  nbt,
+	claims := &JWTClaim{
+		UserId: userid,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expirationTime.Unix(),
+		},
 	}
 
-	token, err := t.Encrypt([]byte(secretKey), jsonToken, nil)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	tokenString, err := token.SignedString(secretKey)
 
 	if err != nil {
 		return "", apperror.Parse(err)
 	}
 
-	return token, nil
+	return tokenString, nil
 }
 
-func Validate(token string) (int64, *apperror.AppError) {
-	var newJsonToken paseto.JSONToken
-	t := paseto.NewV2()
-	err := t.Decrypt(token, []byte(secretKey), &newJsonToken, nil)
+func Validate(tokenString string) *int64 {
+	token, err := jwt.ParseWithClaims(
+		tokenString,
+		&JWTClaim{},
+		func(token *jwt.Token) (interface{}, error) {
+			return []byte(secretKey), nil
+		},
+	)
 
 	if err != nil {
-		return 0, apperror.Parse(err)
+		return nil
 	}
 
-	if newJsonToken.Expiration.Before(time.Now()) {
-		return 0, &apperror.UnauthorizedError
+	claims, ok := token.Claims.(*JWTClaim)
+
+	if !ok {
+		return nil
 	}
 
-	i, err := strconv.ParseInt(newJsonToken.Subject, 10, 64)
-	if err != nil {
-		return 0, apperror.Parse(err)
+	if claims.ExpiresAt < time.Now().Local().Unix() {
+		return nil
 	}
 
-	return i, nil
+	return &claims.UserId
 }
 
 type ContextKey string
@@ -74,9 +80,9 @@ func GetUserIdFromContext(r *http.Request) *int64 {
 		return nil
 	}
 
-	userIdInt64 := userId.(int64)
+	userIdInt64 := userId.(*int64)
 
-	return &userIdInt64
+	return userIdInt64
 }
 
 func AuthMiddleware(next http.Handler) http.Handler {
@@ -90,9 +96,9 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
 		token := strings.TrimPrefix(authHeader, "Bearer ")
 
-		userId, err := Validate(token)
+		userId := Validate(token)
 
-		if err != nil {
+		if userId == nil {
 			apphttp.WriteJSONResponse(w, &apperror.UnauthorizedError)
 			return
 		}
