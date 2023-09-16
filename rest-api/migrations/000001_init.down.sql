@@ -14,3 +14,5 @@ DROP INDEX IF EXISTS "streamkey_name_unique";
 -- Drop tables
 DROP TABLE IF EXISTS "stream_keys";
 DROP TABLE IF EXISTS "users";
+DROP TABLE IF EXISTS "videos";
+DROP TABLE IF EXISTS "images";

@@ -1,23 +1,38 @@
 CREATE TABLE "users" (
-  "id" bigint NOT NULL,
+  "id" bigint PRIMARY KEY NOT NULL,
   "name" text NOT NULL,
   "username" text NOT NULL,
   "email" text NOT NULL,
   "password" text NOT NULL,
   "verified_at" timestamp DEFAULT null,
   "updated_at" timestamp DEFAULT null,
-  "created_at" timestamp NOT NULL DEFAULT (now()),
-  PRIMARY KEY ("id")
+  "created_at" timestamp NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "stream_keys" (
-  "id" bigint NOT NULL,
+  "id" bigint PRIMARY KEY NOT NULL,
   "user_id" bigint NOT NULL,
   "name" text NOT NULL,
   "key" bigint NOT NULL,
   "updated_at" timestamp DEFAULT null,
-  "created_at" timestamp NOT NULL DEFAULT (now()),
-  PRIMARY KEY ("id")
+  "created_at" timestamp NOT NULL DEFAULT (now())
+);
+
+CREATE TABLE "videos" (
+  "id" bigint PRIMARY KEY NOT NULL,
+  "user_id" bigint NOT NULL,
+  "title" text NOT NULL,
+  "description" text NOT NULL DEFAULT '',
+  "thumbnail_id" bigint NOT NULL,
+  "updated_at" timestamp DEFAULT null,
+  "created_at" timestamp NOT NULL DEFAULT (now())
+);
+
+CREATE TABLE "images" (
+  "id" bigint PRIMARY KEY NOT NULL,
+  "user_id" bigint NOT NULL,
+  "updated_at" timestamp DEFAULT null,
+  "created_at" timestamp NOT NULL DEFAULT (now())
 );
 
 CREATE UNIQUE INDEX "email_unique" ON "users" ("email");
@@ -27,6 +42,9 @@ CREATE UNIQUE INDEX "streamkey_key_unique" ON "stream_keys" ("user_id", "key");
 CREATE UNIQUE INDEX "streamkey_name_unique" ON "stream_keys" ("user_id", "name");
 
 ALTER TABLE "stream_keys" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+ALTER TABLE "images" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+ALTER TABLE "videos" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+ALTER TABLE "videos" ADD FOREIGN KEY ("thumbnail_id") REFERENCES "images" ("id");
 
 -- Trigger for updated_at field
 CREATE OR REPLACE FUNCTION updated_timestamp_func()
