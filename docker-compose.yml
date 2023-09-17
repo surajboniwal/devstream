@@ -13,6 +13,16 @@ services:
     networks:
       - default
 
+  data-service:
+    build:
+      context: ./data-service/.devcontainer
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/workspace:cached
+    command: /bin/sh -c "while sleep 1000; do :; done"
+    networks:
+      - default
+
   db:
     image: postgres:latest
     environment:

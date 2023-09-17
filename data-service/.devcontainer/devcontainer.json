@@ -1,0 +1,17 @@
+{
+    "name": "data-service",
+    "dockerComposeFile": [
+        "../../docker-compose.yml"
+    ],
+    "service": "data-service",
+    "shutdownAction": "none",
+    "workspaceFolder": "/workspace/data-service",
+    "overrideCommand": true,
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "rust-lang.rust-analyzer"
+            ]
+        }
+    }
+}
