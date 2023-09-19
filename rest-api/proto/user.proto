@@ -1,5 +1,6 @@
 syntax="proto3";
 package user_rpc;
+option go_package = "./userpb";
 
 message UserRequest{
     string name = 2;

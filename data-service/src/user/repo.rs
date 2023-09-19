@@ -1,3 +1,4 @@
+use rand::Rng;
 use tokio_postgres::{Client, Error};
 
 pub struct User {
@@ -12,6 +13,11 @@ pub struct UserRepository {
     client: Client,
 }
 
+fn random_int64() -> i64 {
+    let mut rng = rand::thread_rng();
+    rng.gen::<i64>()
+}
+
 impl UserRepository {
     pub fn new(client: Client) -> Self {
         Self { client }
@@ -24,7 +30,7 @@ impl UserRepository {
         email: String,
         password: String,
     ) -> Result<User, Error> {
-        let id: i64 = 32173891223123;
+        let id: i64 = random_int64();
 
         let result = self.client.execute(
             "INSERT INTO users (id, name, email, username, password) VALUES($1, $2, $3, $4, $5)",

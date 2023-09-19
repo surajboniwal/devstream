@@ -215,6 +215,7 @@ name = "data-service"
 version = "0.1.0"
 dependencies = [
  "prost",
+ "rand",
  "tokio",
  "tokio-postgres",
  "tonic",
