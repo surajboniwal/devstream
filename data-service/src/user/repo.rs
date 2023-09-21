@@ -1,4 +1,4 @@
-use rand::Rng;
+use sonyflake::Sonyflake;
 use tokio_postgres::{Client, Error};
 
 pub struct User {
@@ -11,16 +11,12 @@ pub struct User {
 
 pub struct UserRepository {
     client: Client,
-}
-
-fn random_int64() -> i64 {
-    let mut rng = rand::thread_rng();
-    rng.gen::<i64>()
+    id_generator: Sonyflake,
 }
 
 impl UserRepository {
-    pub fn new(client: Client) -> Self {
-        Self { client }
+    pub fn new(client: Client, id_generator: Sonyflake) -> Self {
+        Self { client, id_generator }
     }
 
     pub async fn create(
@@ -30,16 +26,16 @@ impl UserRepository {
         email: String,
         password: String,
     ) -> Result<User, Error> {
-        let id: i64 = random_int64();
+        let id: u64 = self.id_generator.next_id().unwrap();
 
         let result = self.client.execute(
             "INSERT INTO users (id, name, email, username, password) VALUES($1, $2, $3, $4, $5)",
-            &[&id, &name, &email, &username, &password],
+            &[&(id as i64), &name, &email, &username, &password],
         ).await;
 
         let user = match result {
             Ok(_) => User {
-                id,
+                id: id as i64,
                 email,
                 name,
                 password,

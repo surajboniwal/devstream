@@ -1,8 +1,9 @@
 pub mod user;
 
 use tokio_postgres::{connect, NoTls};
-
 use tonic::transport::Server;
+use sonyflake::Sonyflake;
+
 use user::{repo::UserRepository, service::UserService};
 
 #[tokio::main]
@@ -18,7 +19,9 @@ async fn main() {
         }
     });
 
-    let user_repository = UserRepository::new(client);
+    let id_generator = Sonyflake::new().unwrap();
+
+    let user_repository = UserRepository::new(client, id_generator);
 
     let user_service = UserService::new(user_repository);
 
